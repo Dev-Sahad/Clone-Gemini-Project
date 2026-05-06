@@ -27,7 +27,7 @@ Since this project is designed for cloud deployment, ensure the following variab
 API_KEY=your_google_gemini_api_key
 JWT_SECRET=your_custom_secret_string
 MY_PASSWORD=******
-PORT=3000
+PORT=3000 ```
 
 
 ##📦 Local Installation
