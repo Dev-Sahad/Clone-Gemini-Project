@@ -3,89 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sahad's AI Engine</title>
+    <title>SAHAD_AI_v2.5 // CORE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .cyber-glow { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        ::-webkit-scrollbar { width: 5px; }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body { font-family: 'JetBrains+Mono', monospace; }
+        .cyber-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+        .glass { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); }
+        
+        /* Custom scrollbar for that terminal look */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
-<body class="bg-[#020617] text-slate-200 font-sans min-h-screen flex flex-col">
+<body class="bg-[#020617] text-slate-300 min-h-screen flex flex-col overflow-hidden">
 
-    <div id="login-overlay" class="fixed inset-0 bg-[#020617] flex items-center justify-center z-50">
-        <div class="bg-[#0f172a] p-8 rounded-2xl border border-blue-500/30 cyber-glow w-80">
-            <h2 class="text-xl font-bold mb-6 text-blue-400 text-center">SYSTEM AUTH</h2>
-            <input id="pass-field" type="password" placeholder="Access Key" 
-                class="w-full bg-black border border-slate-700 p-3 rounded-lg mb-4 outline-none focus:border-blue-500 text-center">
-            <button onclick="doLogin()" class="w-full bg-blue-600 hover:bg-blue-500 py-3 rounded-lg font-bold transition-all">UNLOCK</button>
-        </div>
-    </div>
-
-    <header class="p-4 bg-[#0f172a] border-b border-slate-800 flex justify-between items-center">
-        <h1 class="font-black text-blue-500 tracking-tighter text-xl italic">SAHAD_AI_v2.5</h1>
-        <span class="text-xs text-slate-500 px-2 py-1 border border-slate-700 rounded">LOCAL_HOST:3000</span>
-    </header>
-
-    <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-6">
-        </div>
-
-    <div class="p-4 bg-[#0f172a] border-t border-slate-800">
-        <div class="max-w-4xl mx-auto flex gap-3">
-            <input id="user-msg" type="text" placeholder="Command the AI..." 
-                class="flex-1 bg-black border border-slate-700 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-all">
-            <button onclick="send()" class="bg-blue-600 p-3 rounded-xl cyber-glow hover:scale-105 active:scale-95 transition-all">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                </svg>
+    <div id="auth-overlay" class="fixed inset-0 bg-[#020617] flex items-center justify-center z-50 transition-all duration-500">
+        <div class="glass p-8 rounded-2xl border border-blue-500/30 cyber-glow w-full max-w-xs text-center">
+            <div class="mb-6">
+                <h1 class="text-blue-500 font-black tracking-widest text-2xl">RESTRICTED</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-tighter">Authorized Access Only</p>
+            </div>
+            <input id="key-field" type="password" placeholder="PASSWORD_REQUIRED" 
+                class="w-full bg-black/50 border border-slate-800 p-3 rounded-lg mb-4 text-center outline-none focus:border-blue-500 transition-colors">
+            <button onclick="handleLogin()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-lg font-bold transition-all active:scale-95">
+                EXECUTE_AUTH
             </button>
         </div>
     </div>
 
+    <nav class="p-4 border-b border-slate-800 flex justify-between items-center glass z-10">
+        <div class="flex items-center gap-3">
+            <div class="h-2 w-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_#3b82f6]"></div>
+            <span class="text-blue-400 font-bold tracking-tighter text-lg italic">SAHAD_AI_2.5</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <span class="hidden sm:inline text-[10px] text-slate-600 font-mono">STATUS: ONLINE</span>
+            <button onclick="terminateSession()" class="text-[10px] text-red-500/50 hover:text-red-500 transition-colors uppercase border border-red-500/20 px-2 py-1 rounded">Logout</button>
+        </div>
+    </nav>
+
+    <main id="chat-stream" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-5xl mx-auto w-full">
+        <div class="text-center text-[10px] text-slate-700 uppercase tracking-[0.2em] py-10">--- Encrypted Connection Established ---</div>
+    </main>
+
+    <footer class="p-4 glass border-t border-slate-800">
+        <div class="max-w-4xl mx-auto flex gap-3">
+            <input id="user-input" type="text" placeholder="Input command..." 
+                class="flex-1 bg-black/40 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:border-blue-500 transition-all text-sm">
+            <button onclick="send()" class="bg-blue-600 p-3 rounded-xl cyber-glow hover:bg-blue-500 active:scale-90 transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+            </button>
+        </div>
+        <p class="text-[8px] text-center text-slate-700 mt-2 uppercase tracking-widest">Dev-Sahad Architecture // 2026</p>
+    </footer>
+
     <script>
-    let authToken = localStorage.getItem('sahad_token');
-    if(authToken) document.getElementById('login-overlay').style.display = 'none';
+        const chatStream = document.getElementById('chat-stream');
+        const userInput = document.getElementById('user-input');
+        const authOverlay = document.getElementById('auth-overlay');
 
-    async function doLogin() {
-        const password = document.getElementById('pass-field').value;
-        const res = await fetch('/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ password })
-        });
-        const data = await res.json();
-        if(data.token) {
-            authToken = data.token;
-            localStorage.setItem('sahad_token', authToken);
-            document.getElementById('login-overlay').style.display = 'none';
-        } else { alert("ACCESS DENIED"); }
-    }
-
-    async function send() {
-        const input = document.getElementById('user-msg');
-        const box = document.getElementById('chat-box');
-        const msg = input.value;
-        if(!msg) return;
-
-        // Add user message to UI
-        box.innerHTML += `<div class="flex justify-end"><div class="bg-blue-600 p-3 rounded-xl rounded-tr-none max-w-[80%]">${msg}</div></div>`;
-        input.value = '';
-        box.scrollTop = box.scrollHeight;
-
-        try {
-            const res = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': authToken },
-                body: JSON.stringify({ message: msg })
-            });
-            const data = await res.json();
-
-            if(data.error) throw new Error(data.error);
-
-            box.innerHTML += `<div class="flex justify-start"><div class="bg-slate-800 border border-slate-700 p-4 rounded-xl rounded-tl-none max-w-[90%] text-sm whitespace-pre-wrap">${data.text}</div></div>`;
-        } catch (err) {
-            box.innerHTML += `<div class="flex justify-center"><div class="bg-red-900/30 text-red-400 border border-red-500/50 p-2 rounded-lg text-xs font-mono text-center w-full">CRITICAL ERROR: ${err.message}</div></div>`;
+        // Check for existing session
+        let token = localStorage.getItem('sahad_ai_token');
+        if (token) {
+            authOverlay.classList.add('opacity-0', 'pointer-events-none');
         }
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
+
+        async function handleLogin() {
+            const password = document.getElementById('key-field').value;
+            try {
+                const res = await fetch('/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ password })
+                });
+                const data = await res.json();
+                if (data.token) {
+                    token = data.token;
+                    localStorage.setItem('sahad_ai_token', token);
+                    authOverlay.classList.add('opacity-0', 'pointer-events-none');
+                } else {
+                    alert("ACCESS_DENIED: UNAUTHORIZED_KEY");
+                }
+            } catch (e) {
+                alert("SYSTEM_ERROR: CONNECTION_FAILED");
+            }
+        }
+
+        async function send() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            // Render User Message
+            renderMessage('user', message);
+            userInput.value = '';
+            autoScroll();
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                        'Authorization': token 
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await res.json();
+
+                if (data.error === "SESSION_EXPIRED") {
+                    terminateSession();
+                    return;
+                }
+
+                if (data.error) throw new Error(data.error);
+
+                renderMessage('ai', data.text);
+            } catch (err) {
+                renderMessage('system', `CRITICAL_ERROR: ${err.message}`);
+            }
+            autoScroll();
+        }
+
+        function renderMessage(type, text) {
+            const div = document.createElement('div');
+            div.className = `flex ${type === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-2 duration-300`;
+            
+            let contentClass = "";
+            if (type === 'user') contentClass = "bg-blue-600/10 border border-blue-500/40 text-blue-100 p-3 rounded-2xl rounded-tr-none max-w-[85%] text-sm shadow-lg shadow-blue-900/10";
+            else if (type === 'ai') contentClass = "bg-slate-900/60 border border-slate-800 p-4 rounded-2xl rounded-tl-none max-w-[95%] text-sm leading-relaxed whitespace-pre-wrap text-slate-200 shadow-xl";
+            else contentClass = "bg-red-900/20 border border-red-500/30 p-2 rounded text-[10px] font-mono text-red-400 w-full text-center uppercase tracking-tighter";
+
+            div.innerHTML = `<div class="${contentClass}">${text}</div>`;
+            chatStream.appendChild(div);
+        }
+
+        function autoScroll() {
+            chatStream.scrollTo({ top: chatStream.scrollHeight, behavior: 'smooth' });
+        }
+
+        function terminateSession() {
+            localStorage.removeItem('sahad_ai_token');
+            location.reload();
+        }
+
+        // Keyboard support
+        userInput.addEventListener("keypress", (e) => { if(e.key === "Enter") send(); });
+    </script>
+</body>
+</html>
