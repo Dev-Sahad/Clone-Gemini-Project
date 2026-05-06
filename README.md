@@ -28,3 +28,26 @@ API_KEY=your_google_gemini_api_key
 JWT_SECRET=your_custom_secret_string
 MY_PASSWORD=******
 PORT=3000
+
+
+##📦 Local Installation
+
+# Clone the repo
+git clone [https://github.com/Dev-Sahad/Clone-Gemini-Project.git](https://github.com/Dev-Sahad/Clone-Gemini-Project.git)
+
+# Install dependencies
+npm install
+
+# Start the engine
+node server.js
+
+
+🌐 Cloud Deployment (Render.com)
+Connect your GitHub repository to Render.
+Set Runtime to Node.
+Build Command: npm install
+Start Command: node server.js
+Add your secrets to the Environment tab.
+Architect: Muhammad Sahad (https://github.com/Dev-Sahad)
+Version: 2.5.0
+License: MIT
